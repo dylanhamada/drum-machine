@@ -3,39 +3,48 @@ import React from "react";
 const drumPads = [
   {
     keyPress: "Q",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Heater 1",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3"
   },
   {
     keyPress: "W",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Heater 2",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3"
   },
   {
     keyPress: "E",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Heater 3",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3"
   },
   {
     keyPress: "A",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Heater 4",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3"
   },
   {
     keyPress: "S",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Heater 6",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3"
   },
   {
     keyPress: "D",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Open HH",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3"
   },
   {
     keyPress: "Z",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Kick n' Hat",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3"
   },
   {
     keyPress: "X",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Kick",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3"
   },
   {
     keyPress: "C",
-    audioSrc: "https://actions.google.com/sounds/v1/cartoon/punchline_drum.ogg"
+    drumName: "Closed HH",
+    audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3"
   }
 ];
 
@@ -54,9 +63,7 @@ class DrumPad extends React.Component {
   }
 
   handleDrumPlay(event) {
-    let audioElement = document.getElementById(event.target.innerHTML);
-    audioElement.play();
-    this.props.onChange(event.target.innerHTML);
+    this.props.onChange(event);
   }
 
   render() {
@@ -67,6 +74,7 @@ class DrumPad extends React.Component {
           id={this.props.letterKey}
           className="clip"
           src={this.props.audioSrc}
+          drumname={this.props.drumName}
         />
       </div>
     );
@@ -82,10 +90,26 @@ class App extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(drumName) {
-    this.setState({
-      drumName: drumName
-    });
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleChange);
+  }
+
+  handleChange(event) {
+    let audioElement;
+
+    if (event.type === "click") {
+      audioElement = document.getElementById(event.target.innerHTML);
+    } else {
+      audioElement = document.getElementById(event.key.toUpperCase());
+    }
+
+    if (audioElement) {
+      audioElement.play();
+
+      this.setState({
+        drumName: audioElement.id
+      });
+    }
   }
 
   render() {
@@ -95,6 +119,7 @@ class App extends React.Component {
         letterKey={drumPad.keyPress}
         audioSrc={drumPad.audioSrc}
         onChange={this.handleChange}
+        drumName={drumPad.drumName}
       />
     ));
 
