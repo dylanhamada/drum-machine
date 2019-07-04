@@ -1,5 +1,6 @@
 import React from "react";
 
+// Array of drum pads used by the app
 const drumPads = [
   {
     keyPress: "Q",
@@ -48,6 +49,8 @@ const drumPads = [
   }
 ];
 
+// Displays drum pad being played
+// Drum pad name passed in via props
 function Display(props) {
   return (
     <div id="display">
@@ -56,25 +59,27 @@ function Display(props) {
   );
 }
 
+// Displays an individual drum pad
 class DrumPad extends React.Component {
   constructor(props) {
     super(props);
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
   }
 
+  // Passes event data to the event handler passed in by App via props
   handleDrumPlay(event) {
     this.props.onChange(event);
   }
 
   render() {
     return (
+      // Clicking this component triggers the event handler
       <div className="drum-pad" onClick={this.handleDrumPlay}>
         <h1>{this.props.letterKey}</h1>
         <audio
           id={this.props.letterKey}
           className="clip"
           src={this.props.audioSrc}
-          drumname={this.props.drumName}
         />
       </div>
     );
@@ -90,6 +95,7 @@ class App extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  // When this component loads, a document-wide 'keydown' event handler is created that calls handleChange()
   componentDidMount() {
     document.addEventListener("keydown", this.handleChange);
   }
@@ -97,6 +103,7 @@ class App extends React.Component {
   handleChange(event) {
     let audioElement;
 
+    // Depending on the event triggered, the audio element is assigned to audioElement
     if (event.type === "click") {
       audioElement = document.getElementById(event.target.innerHTML);
     } else {
@@ -104,10 +111,15 @@ class App extends React.Component {
     }
 
     if (audioElement) {
+      // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
+      let drum = drumPads.filter(
+        drumPad => drumPad.keyPress === audioElement.id
+      );
+
       audioElement.play();
 
       this.setState({
-        drumName: audioElement.id
+        drumName: drum[0].drumName
       });
     }
   }
@@ -119,7 +131,6 @@ class App extends React.Component {
         letterKey={drumPad.keyPress}
         audioSrc={drumPad.audioSrc}
         onChange={this.handleChange}
-        drumName={drumPad.drumName}
       />
     ));
 
