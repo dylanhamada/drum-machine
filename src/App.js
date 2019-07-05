@@ -66,9 +66,35 @@ class DrumPad extends React.Component {
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
   }
 
+  // When this component loads, a document-wide 'keydown' event handler is created that calls handleChange()
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleDrumPlay);
+  }
+
   // Passes event data to the event handler passed in by App via props
   handleDrumPlay(event) {
-    this.props.onChange(event);
+    let audioElement;
+
+    // Depending on the event triggered, the audio element is assigned to audioElement
+    if (event.type === "click") {
+      audioElement = document.getElementById(event.target.innerHTML);
+    } else {
+      audioElement = document.getElementById(event.key.toUpperCase());
+    }
+
+    if (audioElement) {
+      // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
+      let drum = drumPads.filter(
+        drumPad => drumPad.keyPress === audioElement.id
+      );
+
+      // Allows rapid repeated plays of the audio element
+      audioElement.currentTime = 0;
+      audioElement.play();
+
+      // Call the onChange function passed in from the App component, passing the drum variable so App can update the Display component
+      this.props.onChange(drum);
+    }
   }
 
   render() {
@@ -90,41 +116,19 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drumName: "High Hat"
+      drumName: "Drum Name"
     };
     this.handleChange = this.handleChange.bind(this);
   }
 
-  // When this component loads, a document-wide 'keydown' event handler is created that calls handleChange()
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleChange);
-  }
-
-  handleChange(event) {
-    let audioElement;
-
-    // Depending on the event triggered, the audio element is assigned to audioElement
-    if (event.type === "click") {
-      audioElement = document.getElementById(event.target.innerHTML);
-    } else {
-      audioElement = document.getElementById(event.key.toUpperCase());
-    }
-
-    if (audioElement) {
-      // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
-      let drum = drumPads.filter(
-        drumPad => drumPad.keyPress === audioElement.id
-      );
-
-      audioElement.play();
-
-      this.setState({
-        drumName: drum[0].drumName
-      });
-    }
+  handleChange(drum) {
+    this.setState({
+      drumName: drum[0].drumName
+    });
   }
 
   render() {
+    // Generate a series of DrumPad components using the map method
     const drumList = drumPads.map(drumPad => (
       <DrumPad
         key={drumPad.keyPress}
