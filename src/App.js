@@ -59,6 +59,47 @@ function Display(props) {
   );
 }
 
+// Records sequence of drum clicks or presses and passes them to an array in App component state
+class Record extends React.Component {
+  constructor(props) {
+    super(props);
+    this.pressRecord = this.pressRecord.bind(this);
+  }
+
+  pressRecord() {
+    this.props.onChange();
+  }
+
+  render() {
+    return (
+      <div>
+        <button className="btn btn-danger" onClick={this.pressRecord}>
+          {this.props.buttonText}
+        </button>
+      </div>
+    );
+  }
+}
+
+class Play extends React.Component {
+  constructor(props) {
+    super(props);
+    this.pressPlay = this.pressPlay.bind(this);
+  }
+
+  pressPlay() {}
+
+  render() {
+    return (
+      <div>
+        <button className="btn btn-info" onClick={this.pressPlay}>
+          Play
+        </button>
+      </div>
+    );
+  }
+}
+
 // Displays an individual drum pad
 class DrumPad extends React.Component {
   constructor(props) {
@@ -66,7 +107,7 @@ class DrumPad extends React.Component {
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
   }
 
-  // When this component loads, a document-wide 'keydown' event handler is created that calls handleChange()
+  // When this component loads, a document-wide 'keydown' event handler is created that calls handleDrumChange()
   componentDidMount() {
     document.addEventListener("keydown", this.handleDrumPlay);
   }
@@ -88,7 +129,7 @@ class DrumPad extends React.Component {
         drumPad => drumPad.keyPress === audioElement.id
       );
 
-      // Allows rapid repeated plays of the audio element
+      // Allows rapid repeated plays of an individual audio element
       audioElement.currentTime = 0;
       audioElement.play();
 
@@ -116,14 +157,56 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drumName: "Drum Name"
+      drumName: "Drum Name",
+      recordStop: true,
+      recordText: "Record",
+      timeStamps: [[], []]
     };
-    this.handleChange = this.handleChange.bind(this);
+    this.handleDrumChange = this.handleDrumChange.bind(this);
+    this.handleRecordChange = this.handleRecordChange.bind(this);
   }
 
-  handleChange(drum) {
+  handleDrumChange(drum) {
     this.setState({
       drumName: drum[0].drumName
+    });
+
+    // If Record button pressed, clicking/pressing drums will push a new Date and drum id to timeStamps array
+    if (!this.state.recordStop) {
+      let totalTime = this.state.timeStamps;
+
+      totalTime[0].push(new Date());
+      totalTime[1].push(drum[0].keyPress);
+
+      this.setState({
+        timeStamps: totalTime
+      });
+    }
+  }
+
+  // Changes text of Record button and sets initial and final Date elements in timeStamp array, to be used to determine playing sequence for the Play component
+  handleRecordChange() {
+    let recordState = this.state.recordStop ? false : true;
+    let buttonState = this.state.recordText === "Record" ? "Stop" : "Record";
+
+    if (this.state.recordStop) {
+      let newTime = [[new Date()], []];
+
+      this.setState({
+        timeStamps: newTime
+      });
+    } else {
+      let totalTime = this.state.timeStamps;
+      totalTime[0].push(new Date());
+
+      this.setState({
+        timeStamps: totalTime
+      });
+    }
+
+    this.setState({
+      recordStop: recordState,
+      recordText: buttonState
     });
   }
 
@@ -134,7 +217,7 @@ class App extends React.Component {
         key={drumPad.keyPress}
         letterKey={drumPad.keyPress}
         audioSrc={drumPad.audioSrc}
-        onChange={this.handleChange}
+        onChange={this.handleDrumChange}
       />
     ));
 
@@ -142,6 +225,12 @@ class App extends React.Component {
       <div id="drum-machine" className="container bg-primary">
         <Display drumPad={this.state.drumName} />
         {drumList}
+        <Record
+          onChange={this.handleRecordChange}
+          recording={this.state.recordStop}
+          buttonText={this.state.recordText}
+        />
+        <Play timeStamps={this.state.timeStamps} />
       </div>
     );
   }
