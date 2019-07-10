@@ -81,13 +81,36 @@ class Record extends React.Component {
   }
 }
 
+// Plays back sequence of drum clicks or presses based on timeStamps array in App component state
 class Play extends React.Component {
   constructor(props) {
     super(props);
     this.pressPlay = this.pressPlay.bind(this);
   }
 
-  pressPlay() {}
+  pressPlay() {
+    let intervals = this.props.timeStamps[0]
+      .map((element, index, array) => element - array[index - 1])
+      .filter(element => element);
+    let soundArr = this.props.timeStamps[1];
+    let counter = 0;
+    let delay = intervals[counter];
+    let soundId = soundArr[counter];
+
+    // Uses a recursive function to sequence playback via setTimeout method
+    let timerId = setTimeout(function playAudio() {
+      document.getElementById(soundId).play();
+      counter++;
+      delay = intervals[counter];
+      soundId = soundArr[counter];
+
+      if (delay) {
+        if (soundId) {
+          timerId = setTimeout(playAudio, delay);
+        }
+      }
+    }, delay);
+  }
 
   render() {
     return (
