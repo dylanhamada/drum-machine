@@ -99,6 +99,7 @@ class Play extends React.Component {
 
     // Uses a recursive function to sequence playback via setTimeout method
     let timerId = setTimeout(function playAudio() {
+      document.getElementById(soundId).currentTime = 0;
       document.getElementById(soundId).play();
       counter++;
       delay = intervals[counter];
