@@ -105,10 +105,8 @@ class Play extends React.Component {
       delay = intervals[counter];
       soundId = soundArr[counter];
 
-      if (delay) {
-        if (soundId) {
-          timerId = setTimeout(playAudio, delay);
-        }
+      if (delay && soundId) {
+        timerId = setTimeout(playAudio, delay);
       }
     }, delay);
   }
@@ -165,7 +163,11 @@ class DrumPad extends React.Component {
   render() {
     return (
       // Clicking this component triggers the event handler
-      <div className="drum-pad" onClick={this.handleDrumPlay}>
+      <div
+        id={this.props.drumName}
+        className="drum-pad"
+        onClick={this.handleDrumPlay}
+      >
         <h1>{this.props.letterKey}</h1>
         <audio
           id={this.props.letterKey}
@@ -195,7 +197,7 @@ class App extends React.Component {
       drumName: drum[0].drumName
     });
 
-    // If Record button pressed, clicking/pressing drums will push a new Date and drum id to timeStamps array
+    // If Recording is on, clicking/pressing drums will push a new Date and drum id to timeStamps array
     if (!this.state.recordStop) {
       let totalTime = this.state.timeStamps;
 
@@ -242,6 +244,7 @@ class App extends React.Component {
         letterKey={drumPad.keyPress}
         audioSrc={drumPad.audioSrc}
         onChange={this.handleDrumChange}
+        drumName={drumPad.drumName}
       />
     ));
 
