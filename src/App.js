@@ -92,6 +92,9 @@ class Play extends React.Component {
     let intervals = this.props.timeStamps[0]
       .map((element, index, array) => element - array[index - 1])
       .filter(element => element);
+
+    console.log(intervals);
+
     let soundArr = this.props.timeStamps[1];
     let counter = 0;
     let delay = intervals[counter];
@@ -129,21 +132,11 @@ class DrumPad extends React.Component {
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
   }
 
-  // When this component loads, a document-wide 'keydown' event handler is created that calls handleDrumChange()
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleDrumPlay);
-  }
-
   // Passes event data to the event handler passed in by App via props
   handleDrumPlay(event) {
     let audioElement;
 
-    // Depending on the event triggered, the audio element is assigned to audioElement
-    if (event.type === "click") {
-      audioElement = document.getElementById(event.target.innerHTML);
-    } else {
-      audioElement = document.getElementById(event.key.toUpperCase());
-    }
+    audioElement = document.getElementById(event.target.innerHTML);
 
     if (audioElement) {
       // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
@@ -190,6 +183,28 @@ class App extends React.Component {
     };
     this.handleDrumChange = this.handleDrumChange.bind(this);
     this.handleRecordChange = this.handleRecordChange.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+  }
+
+  // When this component loads, a document-wide 'keydown' event handler is created that calls handleDrumChange()
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyPress);
+  }
+
+  handleKeyPress(event) {
+    let audioElement;
+    audioElement = document.getElementById(event.key.toUpperCase());
+
+    if (audioElement) {
+      let drum = drumPads.filter(
+        drumPad => drumPad.keyPress === audioElement.id
+      );
+
+      audioElement.currentTime = 0;
+      audioElement.play();
+
+      this.handleDrumChange(drum);
+    }
   }
 
   handleDrumChange(drum) {
