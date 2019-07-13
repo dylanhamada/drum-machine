@@ -1,4 +1,5 @@
 import React from "react";
+import "./App.css";
 
 // Array of drum pads used by the app
 const drumPads = [
@@ -52,11 +53,7 @@ const drumPads = [
 // Displays drum pad being played
 // Drum pad name passed in via props
 function Display(props) {
-  return (
-    <div id="display">
-      <h1 className="text-center">{props.drumPad}</h1>
-    </div>
-  );
+  return <div id="display">{props.drumPad}</div>;
 }
 
 // Records sequence of drum clicks or presses and passes them to an array in App component state
@@ -72,10 +69,8 @@ class Record extends React.Component {
 
   render() {
     return (
-      <div>
-        <button className="btn btn-danger" onClick={this.pressRecord}>
-          {this.props.buttonText}
-        </button>
+      <div id="record" onClick={this.pressRecord}>
+        {this.props.buttonText}
       </div>
     );
   }
@@ -89,37 +84,35 @@ class Play extends React.Component {
   }
 
   pressPlay() {
-    let intervals = this.props.timeStamps[0]
-      .map((element, index, array) => element - array[index - 1])
-      .filter(element => element);
+    if (this.props.timeStamps[0].length > 0) {
+      let intervals = this.props.timeStamps[0]
+        .map((element, index, array) => element - array[index - 1])
+        .filter(element => element);
 
-    console.log(intervals);
+      let soundArr = this.props.timeStamps[1];
+      let counter = 0;
+      let delay = intervals[counter];
+      let soundId = soundArr[counter];
 
-    let soundArr = this.props.timeStamps[1];
-    let counter = 0;
-    let delay = intervals[counter];
-    let soundId = soundArr[counter];
+      // Uses a recursive function to sequence playback via setTimeout method
+      let timerId = setTimeout(function playAudio() {
+        document.getElementById(soundId).currentTime = 0;
+        document.getElementById(soundId).play();
+        counter++;
+        delay = intervals[counter];
+        soundId = soundArr[counter];
 
-    // Uses a recursive function to sequence playback via setTimeout method
-    let timerId = setTimeout(function playAudio() {
-      document.getElementById(soundId).currentTime = 0;
-      document.getElementById(soundId).play();
-      counter++;
-      delay = intervals[counter];
-      soundId = soundArr[counter];
-
-      if (delay && soundId) {
-        timerId = setTimeout(playAudio, delay);
-      }
-    }, delay);
+        if (delay && soundId) {
+          timerId = setTimeout(playAudio, delay);
+        }
+      }, delay);
+    }
   }
 
   render() {
     return (
-      <div>
-        <button className="btn btn-info" onClick={this.pressPlay}>
-          Play
-        </button>
+      <div id="play" onClick={this.pressPlay}>
+        Play
       </div>
     );
   }
@@ -136,7 +129,7 @@ class DrumPad extends React.Component {
   handleDrumPlay(event) {
     let audioElement;
 
-    audioElement = document.getElementById(event.target.innerHTML);
+    audioElement = event.target.lastChild;
 
     if (audioElement) {
       // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
@@ -161,7 +154,7 @@ class DrumPad extends React.Component {
         className="drum-pad"
         onClick={this.handleDrumPlay}
       >
-        <h1>{this.props.letterKey}</h1>
+        {this.props.letterKey}
         <audio
           id={this.props.letterKey}
           className="clip"
@@ -264,15 +257,17 @@ class App extends React.Component {
     ));
 
     return (
-      <div id="drum-machine" className="container bg-primary">
+      <div id="drum-machine">
         <Display drumPad={this.state.drumName} />
         {drumList}
-        <Record
-          onChange={this.handleRecordChange}
-          recording={this.state.recordStop}
-          buttonText={this.state.recordText}
-        />
-        <Play timeStamps={this.state.timeStamps} />
+        <div id="record-play">
+          <Record
+            onChange={this.handleRecordChange}
+            recording={this.state.recordStop}
+            buttonText={this.state.recordText}
+          />
+          <Play timeStamps={this.state.timeStamps} />
+        </div>
       </div>
     );
   }
