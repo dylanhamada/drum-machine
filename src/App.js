@@ -260,14 +260,12 @@ class App extends React.Component {
       <div id="drum-machine">
         <Display drumPad={this.state.drumName} />
         {drumList}
-        <div id="record-play">
-          <Record
-            onChange={this.handleRecordChange}
-            recording={this.state.recordStop}
-            buttonText={this.state.recordText}
-          />
-          <Play timeStamps={this.state.timeStamps} />
-        </div>
+        <Record
+          onChange={this.handleRecordChange}
+          recording={this.state.recordStop}
+          buttonText={this.state.recordText}
+        />
+        <Play timeStamps={this.state.timeStamps} />
       </div>
     );
   }
