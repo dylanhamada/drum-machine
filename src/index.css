@@ -1,5 +1,6 @@
 body {
-  background: url(https://res.cloudinary.com/dphmoqr9f/image/upload/v1563242741/FreeCodeCamp/Drum%20Machine/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg);
+  background: url("https://res.cloudinary.com/dphmoqr9f/image/upload/v1563321456/FreeCodeCamp/Drum%20Machine/jfl-35sVnCCynWA-unsplash.jpg")
+    no-repeat center center fixed;
   background-size: cover;
   font-family: "Roboto", "Arial", sans-serif;
 }

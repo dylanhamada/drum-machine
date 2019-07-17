@@ -6,46 +6,55 @@ const drumPads = [
   {
     keyPress: "Q",
     drumName: "Heater 1",
+    drumColor: "255, 127, 80",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3"
   },
   {
     keyPress: "W",
     drumName: "Heater 2",
+    drumColor: "244, 196, 48",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3"
   },
   {
     keyPress: "E",
     drumName: "Heater 3",
+    drumColor: "23, 126, 137",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3"
   },
   {
     keyPress: "A",
     drumName: "Heater 4",
+    drumColor: "8, 76, 97",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3"
   },
   {
     keyPress: "S",
     drumName: "Heater 6",
+    drumColor: "219, 58, 52",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3"
   },
   {
     keyPress: "D",
     drumName: "Open HH",
+    drumColor: "187, 222, 240",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3"
   },
   {
     keyPress: "Z",
     drumName: "Kick n' Hat",
+    drumColor: "0, 166, 166",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3"
   },
   {
     keyPress: "X",
     drumName: "Kick",
+    drumColor: "240, 135, 0",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3"
   },
   {
     keyPress: "C",
     drumName: "Closed HH",
+    drumColor: "73, 109, 219",
     audioSrc: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3"
   }
 ];
@@ -122,7 +131,14 @@ class Play extends React.Component {
 class DrumPad extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      drumStyle: {
+        color: "rgb(" + this.props.drumColor + ")"
+      }
+    };
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
   }
 
   // Passes event data to the event handler passed in by App via props
@@ -146,6 +162,24 @@ class DrumPad extends React.Component {
     }
   }
 
+  handleMouseOver() {
+    this.setState({
+      drumStyle: {
+        color: "white",
+        backgroundColor: "rgb(" + this.props.drumColor + ")"
+      }
+    });
+  }
+
+  handleMouseOut() {
+    this.setState({
+      drumStyle: {
+        color: "rgb(" + this.props.drumColor + ")",
+        backgroundColor: "#f8f8f8"
+      }
+    });
+  }
+
   render() {
     return (
       // Clicking this component triggers the event handler
@@ -153,6 +187,9 @@ class DrumPad extends React.Component {
         id={this.props.drumName}
         className="drum-pad"
         onClick={this.handleDrumPlay}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        style={this.state.drumStyle}
       >
         {this.props.letterKey}
         <audio
@@ -253,6 +290,7 @@ class App extends React.Component {
         audioSrc={drumPad.audioSrc}
         onChange={this.handleDrumChange}
         drumName={drumPad.drumName}
+        drumColor={drumPad.drumColor}
       />
     ));
 
