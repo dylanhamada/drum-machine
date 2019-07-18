@@ -104,9 +104,8 @@ class Play extends React.Component {
       let soundId = soundArr[counter];
 
       // Uses a recursive function to sequence playback via setTimeout method
-      let timerId = setTimeout(function playAudio() {
-        document.getElementById(soundId).currentTime = 0;
-        document.getElementById(soundId).play();
+      let playAudio = () => {
+        this.props.onPlay(soundId);
         counter++;
         delay = intervals[counter];
         soundId = soundArr[counter];
@@ -114,7 +113,21 @@ class Play extends React.Component {
         if (delay && soundId) {
           timerId = setTimeout(playAudio, delay);
         }
-      }, delay);
+      };
+
+      let timerId = setTimeout(playAudio, delay);
+
+      // let that = this;
+      // let timerId = setTimeout(function playAudio() {
+      //   that.props.onPlay(soundId);
+      //   counter++;
+      //   delay = intervals[counter];
+      //   soundId = soundArr[counter];
+
+      //   if (delay && soundId) {
+      //     timerId = setTimeout(playAudio, delay);
+      //   }
+      // }, delay);
     }
   }
 
@@ -143,30 +156,15 @@ class DrumPad extends React.Component {
 
   // Passes event data to the event handler passed in by App via props
   handleDrumPlay(event) {
-    let audioElement;
-
-    audioElement = event.target.lastChild;
-
-    if (audioElement) {
-      // Filters the drumPads array to find the element whose keyPress value matches the audio element's id
-      let drum = drumPads.filter(
-        drumPad => drumPad.keyPress === audioElement.id
-      );
-
-      // Allows rapid repeated plays of an individual audio element
-      audioElement.currentTime = 0;
-      audioElement.play();
-
-      // Call the onChange function passed in from the App component, passing the drum variable so App can update the Display component
-      this.props.onChange(drum);
-    }
+    this.props.onChange(event);
   }
 
   handleMouseOver() {
     this.setState({
       drumStyle: {
         color: "white",
-        backgroundColor: "rgb(" + this.props.drumColor + ")"
+        backgroundColor: "rgb(" + this.props.drumColor + ")",
+        transition: "background-color 0.3s"
       }
     });
   }
@@ -175,7 +173,8 @@ class DrumPad extends React.Component {
     this.setState({
       drumStyle: {
         color: "rgb(" + this.props.drumColor + ")",
-        backgroundColor: "#f8f8f8"
+        backgroundColor: "#f8f8f8",
+        transition: "background-color 0.3s"
       }
     });
   }
@@ -223,7 +222,14 @@ class App extends React.Component {
 
   handleKeyPress(event) {
     let audioElement;
-    audioElement = document.getElementById(event.key.toUpperCase());
+
+    if (event.type === "click") {
+      audioElement = event.target.lastChild;
+    } else if (event.type === "keydown") {
+      audioElement = document.getElementById(event.key.toUpperCase());
+    } else {
+      audioElement = document.getElementById(event);
+    }
 
     if (audioElement) {
       let drum = drumPads.filter(
@@ -288,7 +294,7 @@ class App extends React.Component {
         key={drumPad.keyPress}
         letterKey={drumPad.keyPress}
         audioSrc={drumPad.audioSrc}
-        onChange={this.handleDrumChange}
+        onChange={this.handleKeyPress}
         drumName={drumPad.drumName}
         drumColor={drumPad.drumColor}
       />
@@ -303,7 +309,7 @@ class App extends React.Component {
           recording={this.state.recordStop}
           buttonText={this.state.recordText}
         />
-        <Play timeStamps={this.state.timeStamps} />
+        <Play timeStamps={this.state.timeStamps} onPlay={this.handleKeyPress} />
       </div>
     );
   }
