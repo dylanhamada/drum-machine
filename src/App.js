@@ -116,18 +116,6 @@ class Play extends React.Component {
       };
 
       let timerId = setTimeout(playAudio, delay);
-
-      // let that = this;
-      // let timerId = setTimeout(function playAudio() {
-      //   that.props.onPlay(soundId);
-      //   counter++;
-      //   delay = intervals[counter];
-      //   soundId = soundArr[counter];
-
-      //   if (delay && soundId) {
-      //     timerId = setTimeout(playAudio, delay);
-      //   }
-      // }, delay);
     }
   }
 
@@ -213,6 +201,7 @@ class App extends React.Component {
     this.handleDrumChange = this.handleDrumChange.bind(this);
     this.handleRecordChange = this.handleRecordChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.drumPadPress = this.drumPadPress.bind(this);
   }
 
   // When this component loads, a document-wide 'keydown' event handler is created that calls handleDrumChange()
@@ -220,9 +209,18 @@ class App extends React.Component {
     document.addEventListener("keydown", this.handleKeyPress);
   }
 
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleKeyPress);
+  }
+
+  /* Plays the child audio element of the DrumPad element being clicked,
+  or whose related key is being pressed, or the audio element being passed
+  by the Play component */
   handleKeyPress(event) {
     let audioElement;
 
+    /* Sets audioElement based on what component or function is calling
+    handleKeyPress */
     if (event.type === "click") {
       audioElement = event.target.lastChild;
     } else if (event.type === "keydown") {
@@ -232,15 +230,49 @@ class App extends React.Component {
     }
 
     if (audioElement) {
+      /* Filters the drumPad array for the element whose "keyPress" property
+      matches the id of audioElement, then passes the element to the
+      handleDrumChange function */
       let drum = drumPads.filter(
         drumPad => drumPad.keyPress === audioElement.id
       );
+      this.handleDrumChange(drum);
 
+      /* Plays audioElement, and sets the "currentTime" property to 0 to
+      allow rapid playing of the element even before the previous play
+      has finished */
       audioElement.currentTime = 0;
       audioElement.play();
 
-      this.handleDrumChange(drum);
+      /* Calls the drumPadPress function to simulate a button press on the
+      parent DrumPad element of audioElement */
+      this.drumPadPress(audioElement.parentElement);
     }
+  }
+
+  /* Changes a DrumPad element's style whenever the element is clicked, the
+  related key is pressed, or the child audio element is played via the
+  Play component functionality */
+  drumPadPress(element) {
+    /* Filters the drumPads array to find the relevant element,
+    so the drumColor property can be referenced */
+    let drumInfo = drumPads.filter(
+      drumPad => drumPad.keyPress === element.childNodes[1].id
+    )[0];
+
+    element.style.fontSize = "1.5em";
+    element.style.color = "white";
+    element.style.backgroundColor = "rgb(" + drumInfo.drumColor + ")";
+    element.style.transition = "all 0.05s";
+
+    /* Visually simulates a button press by "resetting" the previously
+    set styles using a setTimeout method */
+    let timerId = setTimeout(() => {
+      element.style.fontSize = "1em";
+      element.style.color = "rgb(" + drumInfo.drumColor + ")";
+      element.style.backgroundColor = "#f8f8f8";
+      element.style.transition = "all 0.07s";
+    }, 100);
   }
 
   handleDrumChange(drum) {
