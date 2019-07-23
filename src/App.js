@@ -65,38 +65,142 @@ function Display(props) {
   return <div id="display">{props.drumPad}</div>;
 }
 
+class Author extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    let modal = document.querySelector(".modal");
+
+    modal.style.display = "block";
+  }
+
+  render() {
+    return (
+      <div className="authorContainer">
+        <span className="author">Coded and designed by Dylan Hamada</span>
+        <span className="infoBtn" onClick={this.handleClick}>
+          <i id="infoIcon" className="fas fa-info-circle" />
+        </span>
+      </div>
+    );
+  }
+}
+
+function Modal() {
+  function handleClose() {
+    document.querySelector(".modal").style.display = "none";
+  }
+
+  return (
+    <div className="modal">
+      <div className="modalContent">
+        <span className="closeBtn" onClick={handleClose}>
+          &times;
+        </span>
+        <h1>Drum Machine App</h1>
+        <ul>
+          <li>
+            Click the buttons or press the corresponding key to play drum sounds
+          </li>
+          <li>
+            Click the Record button to begin recording your clicks or key
+            presses
+          </li>
+          <li>Click Play to hear your drum playing sequence</li>
+        </ul>
+        <p>
+          Background image courtesy of Hamed Daram on
+          <a href="https://unsplash.com/photos/-5fbmfaInwg">Unsplash</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Records sequence of drum clicks or presses and passes them to an array in App component state
 class Record extends React.Component {
   constructor(props) {
     super(props);
     this.pressRecord = this.pressRecord.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
   }
 
   pressRecord() {
     this.props.onChange();
   }
 
+  handleMouseOver() {
+    document.getElementById("recordButton").classList.remove("hover-text-out");
+    document.getElementById("recordButton").classList.add("hover-text");
+  }
+
+  handleMouseOut() {
+    document.getElementById("recordButton").classList.remove("hover-text");
+    document.getElementById("recordButton").classList.add("hover-text-out");
+  }
+
   render() {
     return (
-      <div id="record" onClick={this.pressRecord}>
-        {this.props.buttonText}
+      <div
+        id="record"
+        onClick={this.pressRecord}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+      >
+        <span id="recordButton">{this.props.recordText}</span>
       </div>
     );
   }
 }
 
-// Plays back sequence of drum clicks or presses based on timeStamps array in App component state
+/* Plays back sequence of drum clicks or presses based on timeStamps 
+array in App component state */
 class Play extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      playText: "Play"
+    };
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
     this.pressPlay = this.pressPlay.bind(this);
   }
 
+  /* MouseOver and MouseOut event handlers */
+  handleMouseOver() {
+    document.getElementById("playButton").classList.remove("hover-text-out");
+    document.getElementById("playButton").classList.add("hover-text");
+  }
+
+  handleMouseOut() {
+    document.getElementById("playButton").classList.remove("hover-text");
+    document.getElementById("playButton").classList.add("hover-text-out");
+  }
+
   pressPlay() {
-    if (this.props.timeStamps[0].length > 0) {
+    if (
+      this.props.timeStamps[0].length > 0 &&
+      this.props.timeStamps[1].length > 0
+    ) {
       let intervals = this.props.timeStamps[0]
         .map((element, index, array) => element - array[index - 1])
         .filter(element => element);
+
+      let intervalTotal = intervals.reduce(
+        (accumulator, currentValue) => accumulator + currentValue
+      );
+      this.setState({
+        playText: "Playing"
+      });
+      let textTimer = setTimeout(() => {
+        this.setState({
+          playText: "Play"
+        });
+      }, intervalTotal);
 
       let soundArr = this.props.timeStamps[1];
       let counter = 0;
@@ -121,8 +225,13 @@ class Play extends React.Component {
 
   render() {
     return (
-      <div id="play" onClick={this.pressPlay}>
-        Play
+      <div
+        id="play"
+        onClick={this.pressPlay}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+      >
+        <span id="playButton">{this.state.playText}</span>
       </div>
     );
   }
@@ -134,7 +243,9 @@ class DrumPad extends React.Component {
     super(props);
     this.state = {
       drumStyle: {
-        color: "rgb(" + this.props.drumColor + ")"
+        color: "rgb(" + this.props.drumColor + ")",
+        backgroundColor: "#f8f8f8",
+        transition: "all 0.3s"
       }
     };
     this.handleDrumPlay = this.handleDrumPlay.bind(this);
@@ -150,9 +261,9 @@ class DrumPad extends React.Component {
   handleMouseOver() {
     this.setState({
       drumStyle: {
-        color: "white",
+        color: "#f8f8f8",
         backgroundColor: "rgb(" + this.props.drumColor + ")",
-        transition: "background-color 0.3s"
+        transition: "all 0.3s"
       }
     });
   }
@@ -162,7 +273,7 @@ class DrumPad extends React.Component {
       drumStyle: {
         color: "rgb(" + this.props.drumColor + ")",
         backgroundColor: "#f8f8f8",
-        transition: "background-color 0.3s"
+        transition: "all 0.3s"
       }
     });
   }
@@ -178,7 +289,7 @@ class DrumPad extends React.Component {
         onMouseOut={this.handleMouseOut}
         style={this.state.drumStyle}
       >
-        {this.props.letterKey}
+        <div className="drumLetter">{this.props.letterKey}</div>
         <audio
           id={this.props.letterKey}
           className="clip"
@@ -193,7 +304,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      drumName: "Drum Name",
+      drumName: "Drum Machine",
       recordStop: true,
       recordText: "Record",
       timeStamps: [[], []]
@@ -222,7 +333,7 @@ class App extends React.Component {
     /* Sets audioElement based on what component or function is calling
     handleKeyPress */
     if (event.type === "click") {
-      audioElement = event.target.lastChild;
+      audioElement = document.getElementById(event.target.innerHTML);
     } else if (event.type === "keydown") {
       audioElement = document.getElementById(event.key.toUpperCase());
     } else {
@@ -250,9 +361,9 @@ class App extends React.Component {
     }
   }
 
-  /* Changes a DrumPad element's style whenever the element is clicked, the
-  related key is pressed, or the child audio element is played via the
-  Play component functionality */
+  /* Changes a DrumPad element's style to simulate a visual "push" whenever 
+  the element is clicked, the related key is pressed, or the child audio 
+  element is played via the Play component functionality */
   drumPadPress(element) {
     /* Filters the drumPads array to find the relevant element,
     so the drumColor property can be referenced */
@@ -271,7 +382,7 @@ class App extends React.Component {
       element.style.fontSize = "1em";
       element.style.color = "rgb(" + drumInfo.drumColor + ")";
       element.style.backgroundColor = "#f8f8f8";
-      element.style.transition = "all 0.07s";
+      element.style.transition = "all 0.05s";
     }, 100);
   }
 
@@ -295,8 +406,14 @@ class App extends React.Component {
 
   // Changes text of Record button and sets initial and final Date elements in timeStamp array, to be used to determine playing sequence for the Play component
   handleRecordChange() {
+    let recordText;
     let recordState = this.state.recordStop ? false : true;
-    let buttonState = this.state.recordText === "Record" ? "Stop" : "Record";
+
+    if (this.state.recordStop) {
+      recordText = "Stop";
+    } else {
+      recordText = "Record";
+    }
 
     if (this.state.recordStop) {
       let newTime = [[new Date()], []];
@@ -315,7 +432,7 @@ class App extends React.Component {
 
     this.setState({
       recordStop: recordState,
-      recordText: buttonState
+      recordText: recordText
     });
   }
 
@@ -338,10 +455,11 @@ class App extends React.Component {
         {drumList}
         <Record
           onChange={this.handleRecordChange}
-          recording={this.state.recordStop}
-          buttonText={this.state.recordText}
+          recordText={this.state.recordText}
         />
         <Play timeStamps={this.state.timeStamps} onPlay={this.handleKeyPress} />
+        <Author />
+        <Modal />
       </div>
     );
   }

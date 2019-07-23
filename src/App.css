@@ -1,44 +1,179 @@
 #drum-machine {
   display: flex;
-  margin: 50px auto;
-  padding: 0 2px;
+  position: relative;
   width: 500px;
+  margin: 50px auto;
   justify-content: center;
   flex-wrap: wrap;
   background: #f8f8f8;
   box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.3);
-  font-size: 2em;
   text-align: center;
 }
 
 #display {
   width: 100%;
-  height: 5%;
-  margin: 15px auto;
-  font-weight: 300;
+  height: 50px;
+  margin: 30px auto 0 auto;
+  font-size: 2em;
+  font-weight: 400;
+  color: #3e3e3e;
 }
 
 #play,
 #record {
-  width: 50%;
-  margin: 15px auto;
-  font-size: 0.75em;
-  font-weight: 300;
-}
-
-.drum-pad {
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 140px;
-  height: 140px;
-  margin: 10px;
+  width: 50%;
+  height: 60px;
+  margin: 10px 0 0 0;
+  padding: 10px 0;
+  font-size: 1.5em;
+  font-weight: 300;
+  transition: all 0.3s;
+}
+
+#record:hover {
+  background-color: red;
+}
+
+#play:hover {
+  background-color: #41e62a;
+}
+
+#infoIcon {
+  color: #0d94f6;
+  font-size: 3em;
+}
+
+#infoIcon:hover {
+  color: #0c619f;
+  transition: color 0.3s;
+}
+
+.drum-pad {
+  position: relative;
+  width: 30%;
+  padding-bottom: 30%;
+  margin: 1.66%;
+  overflow: hidden;
   font-weight: 900;
 }
 
-@media (max-width: 700px) {
+.drumLetter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 80%;
+  width: 90%;
+  padding: 10% 5%;
+  font-size: 1.75em;
+}
+
+.authorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 10%;
+  width: 350px;
+  height: 30px;
+  background-color: #f8f8f8;
+  font-family: "Montserrat", sans-serif;
+}
+
+.author {
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.infoBtn {
+  position: absolute;
+  right: -30px;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.5);
+  font-family: "Montserrat", sans-serif;
+  color: #3e3e3e;
+}
+
+.modalContent {
+  position: relative;
+  background-color: #f8f8f8;
+  margin: 20px auto;
+  padding: 10px;
+  width: 75%;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+.closeBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  float: right;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #969696;
+}
+
+.closeBtn:hover {
+  color: #3e3e3e;
+}
+
+.hover-text {
+  color: #f8f8f8;
+  transition: all 0.2s;
+}
+
+.hover-text-out {
+  color: #3e3e3e;
+  transition: all 0.2s;
+}
+
+@media (max-width: 550px) {
   #drum-machine {
-    width: 75%;
+    width: 90%;
+  }
+}
+
+@media (max-width: 400px) {
+  #display {
+    font-size: 1.75em;
+  }
+
+  #play,
+  #record {
+    font-size: 1.25em;
+  }
+
+  .drumLetter {
+    font-size: 1.25em;
+  }
+}
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
   }
 }

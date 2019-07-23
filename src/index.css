@@ -1,6 +1,22 @@
 body {
-  background: url("https://res.cloudinary.com/dphmoqr9f/image/upload/v1563321456/FreeCodeCamp/Drum%20Machine/jfl-35sVnCCynWA-unsplash.jpg")
+  display: flex;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  background: url("https://res.cloudinary.com/dphmoqr9f/image/upload/v1563813569/FreeCodeCamp/Drum%20Machine/hamed-daram--5fbmfaInwg-unsplash.jpg")
     no-repeat center center fixed;
   background-size: cover;
   font-family: "Roboto", "Arial", sans-serif;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
 }
