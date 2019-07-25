@@ -1,7 +1,9 @@
 import React from "react";
 import "./App.css";
 
-// Array of drum pads used by the app
+/* Array of drum pad objects to be passed into various components,
+and which include the corresponding key, drum name, drum color, and
+audio source */
 const drumPads = [
   {
     keyPress: "Q",
@@ -59,12 +61,14 @@ const drumPads = [
   }
 ];
 
-// Displays drum pad being played
-// Drum pad name passed in via props
+/* Displays the name of the drum pad being played, using props passed in
+via the App component */
 function Display(props) {
   return <div id="display">{props.drumPad}</div>;
 }
 
+/* Displays app author as well as an info button that displays the Modal
+component, which contains further information about the app */
 class Author extends React.Component {
   constructor(props) {
     super(props);
@@ -72,9 +76,7 @@ class Author extends React.Component {
   }
 
   handleClick() {
-    let modal = document.querySelector(".modal");
-
-    modal.style.display = "block";
+    document.querySelector(".modal").style.display = "block";
   }
 
   render() {
@@ -89,7 +91,11 @@ class Author extends React.Component {
   }
 }
 
+/* Modal component that displays further info about the app, including
+instructions and any media credit */
 function Modal() {
+  /* Sets the CSS display value of the component to 'none' when the 
+  'x' button is clicked */
   function handleClose() {
     document.querySelector(".modal").style.display = "none";
   }
@@ -100,27 +106,35 @@ function Modal() {
         <span className="closeBtn" onClick={handleClose}>
           &times;
         </span>
-        <h1>Drum Machine App</h1>
+        <h1 className="appName">Drum Machine App</h1>
+        <h4 className="appDesc">
+          A FreeCodeCamp Front End Development Project built with React
+        </h4>
+        <h4 className="instructions">Instructions:</h4>
         <ul>
           <li>
             Click the buttons or press the corresponding key to play drum sounds
           </li>
           <li>
             Click the Record button to begin recording your clicks or key
-            presses
+            presses, then click Stop to finish recording
           </li>
-          <li>Click Play to hear your drum playing sequence</li>
+          <li>Click Play to hear your drum-playing sequence</li>
         </ul>
         <p>
-          Background image courtesy of Hamed Daram on
-          <a href="https://unsplash.com/photos/-5fbmfaInwg">Unsplash</a>
+          Background image courtesy of Hamed Daram on{" "}
+          <a href="https://unsplash.com/photos/-5fbmfaInwg" target="_blank">
+            Unsplash
+          </a>
         </p>
       </div>
     </div>
   );
 }
 
-// Records sequence of drum clicks or presses and passes them to an array in App component state
+/* Toggles the recordStop property in App state that permits state to 
+begin tracking drumPad clicks and key presses and add them to the
+timeStamps array */
 class Record extends React.Component {
   constructor(props) {
     super(props);
@@ -133,6 +147,7 @@ class Record extends React.Component {
     this.props.onChange();
   }
 
+  /* MouseOver and MouseOut event handlers to change the recordButton's style */
   handleMouseOver() {
     document.getElementById("recordButton").classList.remove("hover-text-out");
     document.getElementById("recordButton").classList.add("hover-text");
@@ -181,15 +196,25 @@ class Play extends React.Component {
     document.getElementById("playButton").classList.add("hover-text-out");
   }
 
+  /* Iterates through the timeStamps object passed in via the App component,
+  which contains time stamps and drum pad ids as recorded by the user;
+  It then calculates the time intervals between these time stamps, and
+  recursively calls the onPlay function passed in via App, using the 
+  drumpad ids as arguments */
   pressPlay() {
+    /* Only fires if the timeStamps object is not empty, ie. it won't
+    execute if the user has not recorded any sequences yet */
     if (
       this.props.timeStamps[0].length > 0 &&
       this.props.timeStamps[1].length > 0
     ) {
+      /* Calculates the intervals between time stamps */
       let intervals = this.props.timeStamps[0]
         .map((element, index, array) => element - array[index - 1])
         .filter(element => element);
 
+      /* Changes the text of the playButton span to 'Playing' while the
+      sequence is playing, then changes it back to 'Play' */
       let intervalTotal = intervals.reduce(
         (accumulator, currentValue) => accumulator + currentValue
       );
@@ -202,12 +227,14 @@ class Play extends React.Component {
         });
       }, intervalTotal);
 
+      /* Initializes a counter to iterate through the timeStamps object */
       let soundArr = this.props.timeStamps[1];
       let counter = 0;
       let delay = intervals[counter];
       let soundId = soundArr[counter];
 
-      // Uses a recursive function to sequence playback via setTimeout method
+      /* Recursive function that calls itself based on the calculated
+      intervals between time stamps */
       let playAudio = () => {
         this.props.onPlay(soundId);
         counter++;
@@ -237,7 +264,8 @@ class Play extends React.Component {
   }
 }
 
-// Displays an individual drum pad
+/* Individual drum pad elements that use elements passed in from the
+drumPads array for styling */
 class DrumPad extends React.Component {
   constructor(props) {
     super(props);
@@ -253,11 +281,14 @@ class DrumPad extends React.Component {
     this.handleMouseOut = this.handleMouseOut.bind(this);
   }
 
-  // Passes event data to the event handler passed in by App via props
+  /* Passes event data to the handleKeyPress function passed in via the
+  App component, which plays the corresponding audio element */
   handleDrumPlay(event) {
     this.props.onChange(event);
   }
 
+  /* MouseOver and MouseOut event handlers to change the styles of the
+  component */
   handleMouseOver() {
     this.setState({
       drumStyle: {
@@ -280,7 +311,6 @@ class DrumPad extends React.Component {
 
   render() {
     return (
-      // Clicking this component triggers the event handler
       <div
         id={this.props.drumName}
         className="drum-pad"
@@ -300,6 +330,7 @@ class DrumPad extends React.Component {
   }
 }
 
+/* The main component that amalgamates all other components */
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -315,7 +346,9 @@ class App extends React.Component {
     this.drumPadPress = this.drumPadPress.bind(this);
   }
 
-  // When this component loads, a document-wide 'keydown' event handler is created that calls handleDrumChange()
+  /* Document-wide event handler that listens for key presses, and calls the
+  handleKeyPress function to play the corresponding audio file if one of
+  the specified keys is pressed */
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyPress);
   }
@@ -386,12 +419,16 @@ class App extends React.Component {
     }, 100);
   }
 
+  /* Updates the drum name in App state, and updates the timeStamps object
+  in App state with a new timestamp and drum id when the user presses a
+  relevant key or clicks a DrumPad element */
   handleDrumChange(drum) {
     this.setState({
       drumName: drum[0].drumName
     });
 
-    // If Recording is on, clicking/pressing drums will push a new Date and drum id to timeStamps array
+    /* If Recording is on, clicking/pressing drums will push a new Date 
+    and drum id to timeStamps array */
     if (!this.state.recordStop) {
       let totalTime = this.state.timeStamps;
 
@@ -404,7 +441,9 @@ class App extends React.Component {
     }
   }
 
-  // Changes text of Record button and sets initial and final Date elements in timeStamp array, to be used to determine playing sequence for the Play component
+  /* Changes text of Record button and sets initial and 
+  final Date elements in timeStamp array, to be used to 
+  determine playing sequence for the Play component */
   handleRecordChange() {
     let recordText;
     let recordState = this.state.recordStop ? false : true;
@@ -437,7 +476,7 @@ class App extends React.Component {
   }
 
   render() {
-    // Generate a series of DrumPad components using the map method
+    /* Generate a series of DrumPad elements using the map method */
     const drumList = drumPads.map(drumPad => (
       <DrumPad
         key={drumPad.keyPress}

@@ -44,7 +44,7 @@
 
 #infoIcon {
   color: #0d94f6;
-  font-size: 3em;
+  font-size: 2.5em;
 }
 
 #infoIcon:hover {
@@ -78,20 +78,20 @@
   align-items: center;
   position: fixed;
   bottom: 10%;
-  width: 350px;
+  width: 300px;
   height: 30px;
   background-color: #f8f8f8;
   font-family: "Montserrat", sans-serif;
 }
 
 .author {
-  font-size: 0.85em;
+  font-size: 0.825em;
   font-weight: 400;
 }
 
 .infoBtn {
   position: absolute;
-  right: -30px;
+  right: -25px;
   cursor: pointer;
 }
 
@@ -110,26 +110,38 @@
 }
 
 .modalContent {
-  position: relative;
-  background-color: #f8f8f8;
+  display: flex;
   margin: 20px auto;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
   padding: 10px;
   width: 75%;
+  max-width: 840px;
+  background-color: #f8f8f8;
   animation-name: animatetop;
   animation-duration: 0.4s;
 }
 
 .closeBtn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  float: right;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  font-size: 1.5em;
+  align-self: flex-end;
+  font-size: 2em;
   font-weight: 600;
   color: #969696;
+}
+
+.appDesc {
+  margin-top: 0;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.instructions {
+  margin: 10px 0 0 0;
+  padding-left: 10px;
+  align-self: start;
 }
 
 .closeBtn:hover {
@@ -144,6 +156,11 @@
 .hover-text-out {
   color: #3e3e3e;
   transition: all 0.2s;
+}
+
+ul {
+  align-self: start;
+  text-align: left;
 }
 
 @media (max-width: 550px) {
@@ -162,8 +179,43 @@
     font-size: 1.25em;
   }
 
+  #infoIcon {
+    font-size: 2.25em;
+  }
+
+  .appName {
+    font-size: 1.5em;
+  }
+
   .drumLetter {
     font-size: 1.25em;
+  }
+
+  .authorContainer {
+    width: 275px;
+  }
+
+  .author {
+    font-size: 0.75em;
+  }
+
+  .infoBtn {
+    right: -22.5px;
+  }
+
+  h4 {
+    font-size: 0.75em;
+  }
+
+  ul,
+  p {
+    font-size: 0.75em;
+  }
+}
+
+@media (min-height: 1100px) {
+  .authorContainer {
+    bottom: 35%;
   }
 }
 
